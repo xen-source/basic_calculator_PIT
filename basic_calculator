@@ -1,0 +1,12 @@
+def calculate(expression):
+    try:
+        return eval(expression)
+    except ZeroDivisionError:
+        print("Cannot divide by zero!")
+    except SyntaxError:
+        print("Invalid expression!")
+    except:
+        print("Error!")
+
+expression = input("Enter calculation:")
+print("Result:", calculate(expression))
