@@ -1,12 +1,60 @@
-def calculate(expression):
+from tkinter import *
+
+root = Tk()
+
+root.title("Basic Calculator")
+root.geometry("450x600")
+
+def calculate():
     try:
-        return eval(expression)
+        result = eval(entry.get())
     except ZeroDivisionError:
         print("Cannot divide by zero!")
     except SyntaxError:
         print("Invalid expression!")
     except:
         print("Error!")
+    else:
+        entry.delete(0, END)
+        entry.insert(END, str(result))
 
-expression = input("Enter calculation:")
-print("Result:", calculate(expression))
+def press(num):
+    entry.insert(END, str(num))
+
+def clear():
+    entry.delete(0, END)
+
+entry = Entry(root, width=14, font=("Arial", 40), bd=5)
+entry.grid(row=0, column=0, columnspan=4, pady=20, padx=20)
+
+#ROW 2
+Button(root, text="C", command=clear, width=8, height=5, font=("Arial", 10)).grid(row=1, column=0)
+Button(root, text="%", command=lambda:press("%"), width=8, height=5, font=("Arial", 10)).grid(row=1, column=1)
+Button(root, text="DEL", command=lambda:press(), width=8, height=5, font=("Arial", 10)).grid(row=1, column=2)
+Button(root, text="÷", command=lambda:press("÷"), width=8, height=5, font=("Arial", 10)).grid(row=1, column=3)
+
+#ROW 3
+Button(root, text="7", command=lambda:press(7), width=8, height=5, font=("Arial", 10)).grid(row=2, column=0)
+Button(root, text="8", command=lambda:press(8), width=8, height=5, font=("Arial", 10)).grid(row=2, column=1)
+Button(root, text="9", command=lambda:press(9), width=8, height=5, font=("Arial", 10)).grid(row=2, column=2)
+Button(root, text="x", command=lambda:press("*"), width=8, height=5, font=("Arial", 10)).grid(row=2, column=3)
+
+#ROW 4
+Button(root, text="4", command=lambda:press(4), width=8, height=5, font=("Arial", 10)).grid(row=3, column=0)
+Button(root, text="5", command=lambda:press(5), width=8, height=5, font=("Arial", 10)).grid(row=3, column=1)
+Button(root, text="6", command=lambda:press(6), width=8, height=5, font=("Arial", 10)).grid(row=3, column=2)
+Button(root, text="-", command=lambda:press("-"), width=8, height=5, font=("Arial", 10)).grid(row=3, column=3)
+
+#ROW 5
+Button(root, text="1", command=lambda:press(1), width=8, height=5, font=("Arial", 10)).grid(row=4, column=0)
+Button(root, text="2", command=lambda:press(2), width=8, height=5, font=("Arial", 10)).grid(row=4, column=1)
+Button(root, text="3", command=lambda:press(3), width=8, height=5, font=("Arial", 10)).grid(row=4, column=2)
+Button(root, text="+", command=lambda:press("+"), width=8, height=5, font=("Arial", 10)).grid(row=4, column=3)
+
+#ROW 6
+Button(root, text=">.<", command=lambda:press("Cute si Xenus"), width=8, height=5, font=("Arial", 10)).grid(row=5, column=0)
+Button(root, text="0", command=lambda:press(0), width=8, height=5, font=("Arial", 10)).grid(row=5, column=1)
+Button(root, text=".", command=lambda:press("."), width=8, height=5, font=("Arial", 10)).grid(row=5, column=2)
+Button(root, text="=", command=calculate, width=8, height=5, font=("Arial", 10)).grid(row=5, column=3)
+
+root = mainloop()
