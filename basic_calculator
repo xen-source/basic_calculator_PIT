@@ -1,4 +1,5 @@
 from tkinter import *
+from simpleeval import simple_eval
 
 root = Tk()
 
@@ -8,56 +9,91 @@ root.configure(bg="#000000")
 
 def calculate():
     try:
-        result = eval(entry.get())
+        expression = entry.get()
+        expression = expression.replace("÷", "/")
+        expression = expression.replace("x", "*")
+        expression = expression.replace("%", "/100*")
+
+        if expression.endswith("*"):
+            expression = expression[:-1]
+
+        result = simple_eval(expression)
+
+        history_item = f"{expression} = {result}"
+        history_list.insert(0, history_item)
+
+        entry_res.delete(0, END)
+        entry_res.insert(END, str(result))
     except ZeroDivisionError:
-        print("Cannot divide by zero!")
+        print("You cannot divide by zero!")
+        entry_res.delete(0, END)
+        entry_res.insert(END, "Error")
     except SyntaxError:
         print("Invalid expression!")
+        entry.delete(0, END)
+        entry.insert(END, "Error")
+        entry_res.delete(0, END)
     except:
         print("Error!")
-    else:
-        entry_res.insert(END, str(result))
 
 def press(num):
-    entry.insert(END, str(num))
+    entry.insert(END, num)
 
 def clear():
     entry.delete(0, END)
     entry_res.delete(0, END)
 
+def Del():
+    expression = entry.get()
+    entry.delete(len(expression) - 1, END)
+    entry_res.delete(0, END)
+
+def toggle_history():
+    if history_list.winfo_viewable():
+        history_list.grid_remove()
+        root.geometry("425x580") # Original size
+
+    else:
+        history_list.grid(row=0, column=0, rowspan=7, padx=10)
+        root.geometry("625x580") # Wider to show history
+
+# USER INPUT
 entry = Entry(root, width=14, font=("Arial", 40), bd=5, relief="flat", bg="#000000", fg="white", justify="right")
-entry.grid(row=0, column=0, columnspan=4, pady=10, padx=3, sticky="nsew")
+entry.grid(row=0, column=1, columnspan=4, pady=10, padx=3, sticky="nsew")
 entry_res = Entry(root, width=14, font=("Arial", 25), bd=5, relief="flat", bg="#000000", fg="white", justify="right")
-entry_res.grid(row=1, column=0, columnspan=4, pady=3, padx=10, sticky="nsew")
+entry_res.grid(row=1, column=1, columnspan=4, pady=3, padx=10, sticky="nsew")
 
-#ROW 2
-Button(root, text="C", command=clear, width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#F3511F").grid(row=2, column=0, pady=0, padx=0, sticky="nsew")
-Button(root, text="%", command=lambda:press("%"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=2, column=1, pady=0, padx=0, sticky="nsew")
-Button(root, text="DEL", command=lambda:press(), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=2, column=2, pady=0, padx=0, sticky="nsew")
-Button(root, text="÷", command=lambda:press("÷"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=2, column=3, pady=0, padx=0, sticky="nsew")
+# HISTORY
+history_list = Listbox(root, width=20, height=15, font=("Arial", 12), bg="#1D1D1D", fg="white", bd=0, highlightbackground="black", highlightcolor="black")
 
-#ROW 3
-Button(root, text="7", command=lambda:press(7), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=3, column=0, pady=0, padx=0, sticky="nsew")
-Button(root, text="8", command=lambda:press(8), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=3, column=1, pady=0, padx=0, sticky="nsew")
-Button(root, text="9", command=lambda:press(9), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=3, column=2, pady=0, padx=0, sticky="nsew")
-Button(root, text="x", command=lambda:press("*"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=3, column=3, pady=0, padx=0, sticky="nsew")
+# ROW 1 BUTTONS
+Button(root, text="C", command=clear, width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#F3511F").grid(row=2, column=1, pady=0, padx=0, sticky="nsew")
+Button(root, text="%", command=lambda:press("%"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=2, column=2, pady=0, padx=0, sticky="nsew")
+Button(root, text="DEL", command=Del, width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=2, column=3, pady=0, padx=0, sticky="nsew")
+Button(root, text="÷", command=lambda:press("÷"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=2, column=4, pady=0, padx=0, sticky="nsew")
 
-#ROW 4
-Button(root, text="4", command=lambda:press(4), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=4, column=0, pady=0, padx=0, sticky="nsew")
-Button(root, text="5", command=lambda:press(5), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=4, column=1, pady=0, padx=0, sticky="nsew")
-Button(root, text="6", command=lambda:press(6), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=4, column=2, pady=0, padx=0, sticky="nsew")
-Button(root, text="-", command=lambda:press("-"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=4, column=3, pady=0, padx=0, sticky="nsew")
+#ROW 2 BUTTONS
+Button(root, text="7", command=lambda:press(7), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=3, column=1, pady=0, padx=0, sticky="nsew")
+Button(root, text="8", command=lambda:press(8), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=3, column=2, pady=0, padx=0, sticky="nsew")
+Button(root, text="9", command=lambda:press(9), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=3, column=3, pady=0, padx=0, sticky="nsew")
+Button(root, text="x", command=lambda:press("x"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=3, column=4, pady=0, padx=0, sticky="nsew")
 
-#ROW 5
-Button(root, text="1", command=lambda:press(1), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=5, column=0, pady=0, padx=0, sticky="nsew")
-Button(root, text="2", command=lambda:press(2), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=5, column=1, pady=0, padx=0, sticky="nsew")
-Button(root, text="3", command=lambda:press(3), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=5, column=2, pady=0, padx=0, sticky="nsew")
-Button(root, text="+", command=lambda:press("+"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=5, column=3, pady=0, padx=0, sticky="nsew")
+#ROW 3 BUTTONS
+Button(root, text="4", command=lambda:press(4), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=4, column=1, pady=0, padx=0, sticky="nsew")
+Button(root, text="5", command=lambda:press(5), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=4, column=2, pady=0, padx=0, sticky="nsew")
+Button(root, text="6", command=lambda:press(6), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=4, column=3, pady=0, padx=0, sticky="nsew")
+Button(root, text="-", command=lambda:press("-"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=4, column=4, pady=0, padx=0, sticky="nsew")
 
-#ROW 6
-Button(root, text=">.<", command=lambda:press("Cute si Xenus"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=6, column=0, pady=0, padx=0, sticky="nsew")
-Button(root, text="0", command=lambda:press(0), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=6, column=1, pady=0, padx=0, sticky="nsew")
-Button(root, text=".", command=lambda:press("."), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=6, column=2, pady=0, padx=0, sticky="nsew")
-Button(root, text="=", command=calculate, width=3, height=3, font=("Arial", 15), relief="flat", bg="#2EBB41", fg="white").grid(row=6, column=3, pady=0, padx=0, sticky="nsew")
+#ROW 4 BUTTONS
+Button(root, text="1", command=lambda:press(1), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=5, column=1, pady=0, padx=0, sticky="nsew")
+Button(root, text="2", command=lambda:press(2), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=5, column=2, pady=0, padx=0, sticky="nsew")
+Button(root, text="3", command=lambda:press(3), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=5, column=3, pady=0, padx=0, sticky="nsew")
+Button(root, text="+", command=lambda:press("+"), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="#2EBB41").grid(row=5, column=4, pady=0, padx=0, sticky="nsew")
+
+#ROW 5 BUTTONS
+Button(root, text="🕒", command=toggle_history, width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=6, column=1, pady=0, padx=0, sticky="nsew")
+Button(root, text="0", command=lambda:press(0), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=6, column=2, pady=0, padx=0, sticky="nsew")
+Button(root, text=".", command=lambda:press("."), width=3, height=3, font=("Arial", 15), relief="flat", bg="#1D1D1D", fg="white").grid(row=6, column=3, pady=0, padx=0, sticky="nsew")
+Button(root, text="=", command=calculate, width=3, height=3, font=("Arial", 15), relief="flat", bg="#2EBB41", fg="white").grid(row=6, column=4, pady=0, padx=0, sticky="nsew")
 
 root = mainloop()
